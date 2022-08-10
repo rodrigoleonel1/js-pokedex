@@ -33,6 +33,34 @@ header{
 }
 
 /*Estilos Main*/
+
+.order{
+    text-align: center;
+}
+
+.order p{
+    margin-top: 20px;
+    font-weight: 700;
+}
+
+.buttons{
+    display: flex;
+    justify-content: center;
+}
+
+.button{
+    margin: 0px 10px;
+    padding: 5px 15px;
+    background-color: #FF0000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.button:hover{
+    color: yellow;
+}
+
 .pokemonCards{
     display: grid;
     grid-template-columns: repeat(6,1fr)
@@ -45,12 +73,18 @@ header{
     text-align: center;
     max-height: 700px;
     border: none;
+    transition: all 0.5s ease;
+}
+
+.card:hover{
+    transform: scale(1.1);
 }
 
 .card img{
     min-width: 200px;
     width: 100%;
 }
+
 
 .pokemonNumber{
     font-size: 1rem;
@@ -60,21 +94,22 @@ header{
 .card h3{
     color: black;
     font-size: 2rem;
-
 }
 
 .types{
     display: flex;
     justify-content: space-around;
-    
+    align-items: center;
 }
 
 .pokemonType{
     font-size: 1rem;
     background-color: black;
-    color: white;
-    border-radius: 50px;
-    padding: 5px 20px;
+    color: black;
+    border-radius: 5px;
+    padding: 0px 20px;
+    margin-bottom: 0;
+    font-weight: 500;
 }
 
 /*Estilos Footer*/

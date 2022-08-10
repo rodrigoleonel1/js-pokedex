@@ -98,8 +98,8 @@ const graveler = new Pokemon(75, "Graveler", "Roca", "Tierra")
 const golem = new Pokemon(76, "Golem", "Roca", "Tierra")
 const ponyta = new Pokemon(77, "Ponyta", "Fuego", "Ninguno")
 const rapidash = new Pokemon(78, "Rapidash", "Fuego", "Ninguno")
-const slowpoke = new Pokemon(79, "Slowpoke", "Agua", "Píquico")
-const slowbro = new Pokemon(80, "Slowbro", "Agua", "Píquico")
+const slowpoke = new Pokemon(79, "Slowpoke", "Agua", "Psíquico")
+const slowbro = new Pokemon(80, "Slowbro", "Agua", "Psíquico")
 const magnemite = new Pokemon(81, "Magnemite", "Eléctrico", "Acero")
 const magneton = new Pokemon(82, "Magneton", "Eléctrico", "Acero")
 const farfetchd = new Pokemon(83, "Farfetch'd", "Normal", "Volador")
@@ -144,7 +144,7 @@ const starmie = new Pokemon(121, "Starmie", "Agua", "Psíquico")
 const mrMime = new Pokemon(122, "Mr.Mime", "Psíquico", "Hada")
 const scyther = new Pokemon(123, "Scyther", "Bicho", "Volador")
 const jynx = new Pokemon(124, "Jynx", "Hielo", "Psíquico", "Ninguno")
-const electabuzz = new Pokemon(125, "Electabuzz", "Eléctrico")
+const electabuzz = new Pokemon(125, "Electabuzz", "Eléctrico", "Ninguno")
 const magmar = new Pokemon(126, "Magmar", "Fuego", "Ninguno")
 const pinsir = new Pokemon(127, "Pinsir", "Bicho", "Ninguno")
 const tauros = new Pokemon(128, "Tauros", "Normal", "Ninguno")
@@ -167,7 +167,7 @@ const articuno = new Pokemon(144, "Articuno", "Hielo", "Volador")
 const zapdos = new Pokemon(145, "Zapdos", "Eléctrico", "Volador")
 const moltres = new Pokemon(146, "Moltres", "Fuego", "Volador")
 const dratini = new Pokemon(147, "Dratini", "Dragón", "Ninguno")
-const dragonair = new Pokemon(148, "Dragonair", "Dragón")
+const dragonair = new Pokemon(148, "Dragonair", "Dragón", "Ninguno")
 const dragonite = new Pokemon(149, "Dragonite", "Dragón", "Volador")
 const mewtwo = new Pokemon(150, "Mewtwo", "Psíquico", "Ninguno")
 const mew = new Pokemon(151, "Mew", "Psíquico", "Ninguno")
@@ -180,21 +180,116 @@ pokedex.forEach((pokemon)=>{
     pokemon.img = `./img/${pokemon.name}.png`
 })
 
+//Se crean variables con colores para luego utilizar cada una en las cards dependiendo el tipo.
+const colors = {
+    Fuego: '#fd7d24',
+	Planta: '#9bcc50',
+	Eléctrico: '#eed535',
+	Agua: '#4592c4',
+	Tierra: '#caac4d',
+	Roca: '#a38c21',
+	Veneno: '#b97fc9',
+	Bicho: '#bfc901',
+	Dragón: '#97b3e6',
+	Psíquico: '#f366b9',
+	Volador: '#4193a4',
+	Lucha: '#ff5d5d',
+	Normal: '#a4acaf',
+    Hada: '#fdb9e9',
+    Hielo: '#51c4e7',
+    Acero: '#9eb7b8',
+    Fantasma: '#7b62a3'
+}
+
 //Por medio de una plantilla se crea una card para cada objeto del array "pokedex".
 let divPokemons = document.getElementById("pokemons")
 divPokemons.setAttribute("class", "pokemonCards")
-pokedex.forEach((pokemon)=>{
-    let pokemonCards = document.createElement("div")
-    pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber}" class="card">
-                                    <img src="${pokemon.img}" alt="${pokemon.name}">
-                                    <div class="textBox">
-                                        <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
-                                        <h3 class="pokemonName">${pokemon.name}</h3>
-                                    </div>
-                                    <div class="types">
-                                        <p class="pokemonType">${pokemon.type}</p>
-                                        <p class="pokemonType">${pokemon.secondType}</p>
-                                    </div>
-                               </div>`
-    divPokemons.appendChild(pokemonCards)
-})
+
+function cards(){
+    pokedex.forEach((pokemon)=>{
+        let pokemonCards = document.createElement("div")
+        let colorType = colors[pokemon.type]
+        let colorSecondType = colors[pokemon.secondType]
+        if(pokemon.secondType == "Ninguno"){
+            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber}" class="card">
+            <img src="${pokemon.img}" alt="${pokemon.name}">
+            <div class="textBox">
+                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
+                <h3 class="pokemonName">${pokemon.name}</h3>
+            </div>
+            <div class="types">
+                <p class="pokemonType" style = "background-color: ${colorType}" >${pokemon.type}</p>
+            </div>
+         </div>`
+        divPokemons.appendChild(pokemonCards)
+        }
+        
+        else{
+            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber}" class="card">
+            <img src="${pokemon.img}" alt="${pokemon.name}">
+            <div class="textBox">
+                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
+                <h3 class="pokemonName">${pokemon.name}</h3>
+            </div>
+            <div class="types">
+                <p class="pokemonType" style = "background-color: ${colorType}">${pokemon.type}</p>
+                <p class="pokemonType" style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
+            </div>
+        </div>`
+        divPokemons.appendChild(pokemonCards)
+        }  
+    })
+}
+
+//Se inicializan las cards.
+cards()
+
+//Se crean varias funciones para ordenar las cards de distintas formas.
+function orderNumberA(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b)=> (a.pokedexNumber - b.pokedexNumber))
+    cards()
+}
+function orderNumberD(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b)=> (b.pokedexNumber - a.pokedexNumber))
+    cards()
+}
+function orderAlphabeticalA(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b) => {
+        if(a.name < b.name){
+            return -1;
+        }
+        if(a.name > b.name){
+            return 1;
+        }
+        return 0;
+    })
+    cards()
+}
+function orderAlphabeticalD(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b) => {
+        if(a.name < b.name){
+            return 1;
+        }
+        if(a.name > b.name){
+            return -1;
+        }
+        return 0;
+    })
+    cards()
+}
+function random(){
+    divPokemons.innerHTML = ""
+    pokedex.sort(() => Math.random() - 0.5)
+    cards()
+}
+
+//Se toman los botones desde el HTML y a cada uno se le aplica la función correspondiente para odenar las cards de acuerdo a lo que indica cada botón.
+document.getElementById("orderAlphabeticalA").addEventListener("click", orderAlphabeticalA)
+document.getElementById("orderAlphabeticalD").addEventListener("click", orderAlphabeticalD)
+document.getElementById("orderNumberA").addEventListener("click", orderNumberA)
+document.getElementById("orderNumberD").addEventListener("click", orderNumberD)
+document.getElementById("random").addEventListener("click", random)
