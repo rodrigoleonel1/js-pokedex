@@ -12,31 +12,32 @@
     <link rel="icon" href="./img/icon.png"> 
     <title>Pokedex</title>
 </head>
-<body>
+<body id="body">
     <header>
     	<nav class="navbar navbar-expand-lg">
       		<div class="content-header container-fluid">
         		<a class="navbar-brand" href="index.html">
           		  <img src="./img/logo.png" alt="">
         		</a>
-        		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        		<span class="navbar-toggler-icon"></span>
-        		</button>
       		</div>
     	</nav>
   	</header>
     <main>
         <div class="order">
-            <p>Elegí el orden en que se muetran los Pokémon:</p>
+            <p>Ordena los pokemon como mas te guste</p>
         </div>
-        <div class="buttons">
-            <button class="button" id="orderNumberA">Número ascendente</button>
-            <button class="button" id="orderNumberD">Número descendente</button>
-            <button class="button" id="orderAlphabeticalA">Alfabético ascendente</button>
-            <button class="button" id="orderAlphabeticalD">Alfabético descendente</button>
-            <button class="button" id="random">Aleatoriamente</button>
+        <div class="buttons row container-fluid">
+            <input  class="col-12" type="text" name="searchBar" id="searchBar" placeholder="     Buscar por nombre">
+            <button class="button col-12" id="orderNumberA">Número ascendente</button>
+            <button class="button col-12" id="orderNumberD">Número descendente</button>
+            <button class="button col-12" id="orderAlphabeticalA">Alfabético ascendente</button>
+            <button class="button col-12" id="orderAlphabeticalD">Alfabético descendente</button>
+            <button class="button col-12" id="random">Aleatoriamente</button>
+            <button class="button col-12" id="yourTeam">Tu equipo</button>
+            <button class="button col-12" id="resetTeam">Resetear equipo</button>
         </div>
-        <div id="pokemons"></div>
+        
+        <div class="row container-fluid" id="pokemons"></div>
     </main>
     <footer>
         <p>Developed by Rodrigo Alarcón</p>
@@ -45,6 +46,7 @@
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
     <!-- JavaScript -->
+    <script src="./js/data.js"></script>
     <script src="./js/main.js"></script>
 </body>
 </html>
