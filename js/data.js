@@ -12,7 +12,6 @@ class Pokemon{
     showData(){
         console.log(`${this.name}, su número en la pokedex nacional es ${this.pokedexNumber} y es de tipo ${this.type}.`)
     }
-
     showDataTwo(){
         console.log(`${this.name}, su número en la pokedex nacional es ${this.pokedexNumber} y es de tipo ${this.type} y ${this.secondType}.`)
     }

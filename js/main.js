@@ -61,20 +61,20 @@ const cards = (array) => {
         </div>`
         divPokemons.appendChild(pokemonCards)
         }  
-        let btnAgregar = document.getElementById(`${pokemon.name}`)
-
-        btnAgregar.addEventListener("click", addPokemonTeam)
+        let btnAdd = document.getElementById(`${pokemon.name}`)
+        btnAdd.addEventListener("click", addPokemonTeam)
     })
 
 }
 
 //Storage
 
-const saveStorage = (name, valor) => {
-    localStorage.setItem(name, JSON.stringify(valor))
+const saveStorage = (name, value) => {
+    localStorage.setItem(name, JSON.stringify(value))
 }
 
 //Funciones para ordenar cards
+
 function orderNumberA(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b)=> (a.pokedexNumber - b.pokedexNumber))
@@ -124,22 +124,21 @@ const searchPokemon = () => {
     cards(results)
 }
 
+//Funciones para Equipo Pokemon
 const addPokemonTeam = (e) => {
-    const pokemonIdSeleccionado = e.target.getAttribute('id')
-    const pokemonSeleccionado = pokedex.find((pokemon) => pokemon.name == pokemonIdSeleccionado)
+    const pokemonById = e.target.getAttribute('id')
+    const pokemonSelected = pokedex.find((pokemon) => pokemon.name == pokemonById)
     if (teamPokemon.length < 6) {
-        teamPokemon.push(pokemonSeleccionado)
+        teamPokemon.push(pokemonSelected)
         saveStorage('teamPokemon', teamPokemon)
     } else {
         alert('El equipo tiene un maximo de 6 Pokemon')
     }
 }
-
 const pokemonsForTeam = () =>{
     divPokemons.innerHTML = ""
     cards(teamPokemon)
 }
-
 const clearTeam = () => {
     teamPokemon = []
     saveStorage('teamPokemon', teamPokemon)
