@@ -193,6 +193,9 @@ header{
     color: white;
 }
 
+.typeNone{
+    display: none;
+}
 
 /*Estilos Footer*/
 

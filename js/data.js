@@ -8,13 +8,6 @@ class Pokemon{
         this.secondType = secondType,
         this.img = img
     }
-    //Método de la clase "Pokemon".
-    showData(){
-        console.log(`${this.name}, su número en la pokedex nacional es ${this.pokedexNumber} y es de tipo ${this.type}.`)
-    }
-    showDataTwo(){
-        console.log(`${this.name}, su número en la pokedex nacional es ${this.pokedexNumber} y es de tipo ${this.type} y ${this.secondType}.`)
-    }
 }
 
 //Instanciación de objetos con la clase "Pokemon".
@@ -173,21 +166,21 @@ const mew = new Pokemon(151, "Mew", "Psíquico", "Ninguno")
 
 //Se crean variables con colores para luego utilizar cada una en las cards dependiendo el tipo.
 const colors = {
-    Fuego: '#fd7d24',
-	Planta: '#9bcc50',
-	Eléctrico: '#eed535',
-	Agua: '#4592c4',
-	Tierra: '#caac4d',
-	Roca: '#a38c21',
-	Veneno: '#b97fc9',
-	Bicho: '#bfc901',
-	Dragón: '#97b3e6',
-	Psíquico: '#f366b9',
-	Volador: '#4193a4',
-	Lucha: '#ff5d5d',
-	Normal: '#a4acaf',
-    Hada: '#fdb9e9',
-    Hielo: '#51c4e7',
-    Acero: '#9eb7b8',
-    Fantasma: '#7b62a3'
+    Acero: "#9eb7b8",
+    Agua: "#4592c4",
+    Bicho: "#bfc901",
+    Dragón: "#97b3e6",
+    Eléctrico: "#eed535",
+    Fantasma: "#7b62a3",
+    Fuego: "#fd7d24",
+    Hada: "#fdb9e9",
+    Hielo: "#51c4e7",
+    Lucha: "#ff5d5d",
+    Normal: "#a4acaf",
+    Planta: "#9bcc50",
+    Psíquico: "#f366b9",
+    Roca: "#a38c21",
+    Tierra: "#caac4d",
+    Veneno: "#b97fc9",
+    Volador: "#4193a4"
 }

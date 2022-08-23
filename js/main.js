@@ -31,10 +31,10 @@ const cards = (array) => {
     tittle.innerHTML = "Pokémon ordenados por número ascendente"
     array.forEach((pokemon) => {
         let pokemonCards = document.createElement("div")
-        let colorType = colors[pokemon.type]
-        let colorSecondType = colors[pokemon.secondType]
-        if(pokemon.secondType == "Ninguno"){
-            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber+pokemon.name}" class="card">
+        const colorType = colors[pokemon.type]
+        const colorSecondType = colors[pokemon.secondType]
+        pokemonCards.innerHTML = `
+        <div id="${pokemon.name}" class="card">
             <img src="${pokemon.img}" alt="${pokemon.name}">
             <div class="textBox">
                 <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
@@ -42,33 +42,17 @@ const cards = (array) => {
             </div>
             <div class="types">
                 <p class="pokemonType" style = "background-color: ${colorType}" >${pokemon.type}</p>
+                <p class= ${pokemon.secondType == "Ninguno" ? "typeNone" : "pokemonType"} style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
             </div>
-            <button class="addTeam" id="${pokemon.name}">Agregar al equipo</button>
-         </div>`
-        divPokemons.appendChild(pokemonCards)
-        }   
-        else{
-            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber+pokemon.name}" class="card">
-            <img src="${pokemon.img}" alt="${pokemon.name}">
-            <div class="textBox">
-                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
-                <h3 class="pokemonName">${pokemon.name}</h3>
-            </div>
-            <div class="types">
-                <p class="pokemonType" style = "background-color: ${colorType}">${pokemon.type}</p>
-                <p class="pokemonType" style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
-            </div>
-            <button class="addTeam" id="${pokemon.name}">Agregar al equipo</button>
+            <button class="addTeam" id="${pokemon.pokedexNumber}">Agregar al equipo</button>
         </div>`
         divPokemons.appendChild(pokemonCards)
-        }  
-        let btnAdd = document.getElementById(`${pokemon.name}`)
+        let btnAdd = document.getElementById(`${pokemon.pokedexNumber}`)
         btnAdd.addEventListener("click", addPokemonTeam)
     })
-
 }
 
-//Storage
+//guardarStorage
 
 const saveStorage = (name, value) => {
     localStorage.setItem(name, JSON.stringify(value))
@@ -140,8 +124,8 @@ const pokemonsForTeamCard = (array) => {
         let pokemonCards = document.createElement("div")
         let colorType = colors[pokemon.type]
         let colorSecondType = colors[pokemon.secondType]
-        if(pokemon.secondType == "Ninguno"){
-            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber+pokemon.name}" class="card">
+        pokemonCards.innerHTML = `
+        <div id="${pokemon.name}" class="card">
             <img src="${pokemon.img}" alt="${pokemon.name}">
             <div class="textBox">
                 <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
@@ -149,30 +133,15 @@ const pokemonsForTeamCard = (array) => {
             </div>
             <div class="types">
                 <p class="pokemonType" style = "background-color: ${colorType}" >${pokemon.type}</p>
+                <p class= ${pokemon.secondType == "Ninguno" ? "typeNone" : "pokemonType"} style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
             </div>
-            <button class="deleteTeam" id="${pokemon.name}">Eliminar Pokémon</button>
-         </div>`
-        divPokemons.appendChild(pokemonCards)
-        }
-        else{
-            pokemonCards.innerHTML = `<div id="${pokemon.pokedexNumber+pokemon.name}" class="card">
-            <img src="${pokemon.img}" alt="${pokemon.name}">
-            <div class="textBox">
-                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
-                <h3 class="pokemonName">${pokemon.name}</h3>
-            </div>
-            <div class="types">
-                <p class="pokemonType" style = "background-color: ${colorType}">${pokemon.type}</p>
-                <p class="pokemonType" style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
-            </div>
-            <button class="deleteTeam" id="${pokemon.name}">Eliminar Pokémon</button>
+            <button class="deleteTeam" id="${pokemon.pokedexNumber}">Eliminar Pokémon</button>
         </div>`
         divPokemons.appendChild(pokemonCards)
-        }  
     })
     array.forEach((pokemon, index)=>{
-        document.getElementById(`${pokemon.name}`).addEventListener('click', () => {
-            let pokemonInFavorites = document.getElementById(`${pokemon.pokedexNumber+pokemon.name}`)
+        document.getElementById(`${pokemon.pokedexNumber}`).addEventListener('click', () => {
+            let pokemonInFavorites = document.getElementById(`${pokemon.name}`)
             pokemonInFavorites.remove()
             array.splice(index, 1)
             saveStorage('teamPokemon', teamPokemon)
@@ -187,14 +156,14 @@ const pokemonsForTeamCard = (array) => {
     })
 }
 const clearTeam = () => {
-    if(teamPokemon.length == 0){
+    teamPokemon.length == 0 ? (
         Swal.fire({
             title: "Tu equipo Pokémon ya se encuentra vacio",
             icon: "warning",
             timer: 1500,
             showConfirmButton: false
         })
-    }else{
+    ):(
         Swal.fire({
             title: "Perderas todos tus Pokémon.",
             text: `¿Estás seguro de eliminar todo tu equipo?`,
@@ -217,38 +186,38 @@ const clearTeam = () => {
                 orderNumberA()
             }
         })
-    }
+    )
 }
 const addPokemonTeam = (e) => {
     const pokemonById = e.target.getAttribute('id')
-    const pokemonSelected = pokedex.find((pokemon) => pokemon.name == pokemonById)
-    if(teamPokemon.indexOf(pokemonSelected) == -1){
-        if (teamPokemon.length < 6) {
-            teamPokemon.push(pokemonSelected)
-            saveStorage('teamPokemon', teamPokemon)
+    const pokemonSelected = pokedex.find((pokemon) => pokemon.pokedexNumber == pokemonById)
+    teamPokemon.find((pokemon) => pokemon.pokedexNumber == pokemonById) == undefined ? (
+        teamPokemon.length < 6 ? (
+            teamPokemon.push(pokemonSelected),
+            saveStorage('teamPokemon', teamPokemon),
             Toastify({
                 text: `${pokemonSelected.name} se ha unido a tu equipo.`,
                 duration: 3000,
                 gravity: "bottom",
                 style: {background: "#0c950c"},
                 onClick: () => pokemonsForTeam(),
-                }).showToast();
-        } else {
+                }).showToast()
+         ) : (
             Swal.fire({
                 text: "El equipo tiene un máximo de 6 Pokémon, no puedes agregar más.",
                 icon: "error",
                 confirmButtonText: "Entendido"
             })
-        }
-    }else{
+         )
+    ):(
         Toastify({
             text: `No puedes agregar a ${pokemonSelected.name} porque
             ya ha sido agregado previamente al equipo.`,
             duration: 3000,
             gravity: "bottom",
             style: {background: "#2a75bb"},
-            }).showToast();
-    }
+            }).showToast()
+    )
 }
 const pokemonsForTeam = () =>{
     divPokemons.innerHTML = ""
@@ -270,6 +239,7 @@ resetTeam.addEventListener('click', clearTeam)
 
 cards(pokedex)
 
-if (localStorage.getItem('teamPokemon')) {
-    teamPokemon = JSON.parse(localStorage.getItem('teamPokemon'))
-}
+teamPokemon = JSON.parse(localStorage.getItem('teamPokemon')) || []
+
+
+
