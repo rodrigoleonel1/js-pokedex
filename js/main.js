@@ -1,16 +1,22 @@
-//Se cargan todos los Pokemon creados al array "pokedex".
-const pokedex = [bulbasaur,ivysaur,venasaur,charmander,charmeleon,charizard,squirtle,wartortle,blastoise,caterpie,metapod,butterfree,weedle,kakuna,beedrill,pidgey,pidgeotto,pidgeot,rattata,raticate,spearow,fearow,ekans,arbok,pikachu,raichu,sandshrew,sandslash,nidoranFemale,nidorina,nidoqueen,nidoranMale,nidorino,nidoking,clefairy,clefable,vulpix,ninetales,jigglypuff,wigglytuff,zubat,golbat,oddish,gloom,vileplume,paras,parasect,venonat,venomoth,diglett,dugtrio,meowth,persian,psyduck,golduck,mankey,primeape,growlithe,arcanine,poliwag,poliwhirl,poliwrath,abra,kadabra,alakazam,machop,machoke,machamp,bellsprout,weepinbell,victreebel,tentacool,tentacruel,geodude,graveler,golem,ponyta,rapidash,slowpoke,slowbro,magnemite,magneton,farfetchd,doduo,dodrio,seel,dewgong,grimer,muk,shellder,cloyster,gastly,haunter,gengar,onix,drowzee,hypno,krabby,kingler,voltorb,electrode,exeggcute,exeggutor,cubone,marowak,hitmonlee,hitmonchan,lickitung,koffing,weezing,rhyhorn,rhydon,chansey,tangela,kangaskhan,horsea,seadra,goldeen,seaking,staryu,starmie,mrMime,scyther,jynx,electabuzz,magmar,pinsir,tauros,magikarp,gyarados,lapras,ditto,eevee,vaporeon,jolteon,flareon,porygon,omanyte,omastar,kabuto,kabutops,aerodactyl,snorlax,articuno,zapdos,moltres,dratini,dragonair,dragonite,mewtwo,mew]
-
-//Array al que se pushearan los pokemon seleccionados para el equipo pokemon
-
+const pokemonAmount = 898
+const pokedex = []
 let teamPokemon = []
 
-//Se le asigna a cada objeto del array "pokedex" su respectiva imagen.
-pokedex.forEach((pokemon)=>{
-    pokemon.img = `./img/${pokemon.name}.png`
-})
+async function getPokemon(id){
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
+    const pokemonData = await res.json()
+    pokedex.push(pokemonData)
+}
 
-//Selectores
+window.onload = async function() {
+    for(let i = 1; i <= pokemonAmount; i++){
+        await getPokemon(i)
+    }
+    divLoader.remove()
+    cards(pokedex)
+}
+
+// Selectores
 const divPokemons = document.getElementById('pokemons')
 const searchBar = document.getElementById('searchBar')
 const orderAlphabeticalAs = document.getElementById('orderAlphabeticalA')
@@ -21,38 +27,59 @@ const randomOrder = document.getElementById('random')
 const yourTeam = document.getElementById('yourTeam')
 const resetTeam = document.getElementById('resetTeam')
 const tittle = document.getElementById('tittle')
+let divLoader = document.getElementById("loader")
+
+//Se crean variables con colores para luego utilizar cada una en las cards dependiendo el tipo.
+const color = {
+    steel: "#9eb7b8",
+    water: "#4592c4",
+    bug: "#bfc901",
+    dragon: "#97b3e6",
+    electric: "#eed535",
+    ghost: "#7b62a3",
+    fire: "#fd7d24",
+    fairy: "#fdb9e9",
+    ice: "#51c4e7",
+    fighting: "#ff5d5d",
+    normal: "#ddccaa",
+    grass: "#9bcc50",
+    psychic: "#f366b9",
+    rock: "#a38c21",
+    ground: "#caac4d",
+    poison: "#b97fc9",
+    flying: "#4193a4",
+    dark: "#a9a9a9"
+}
 
 //Funciones
 
 //Funcion creadora de cards
 const cards = (array) => {
     divPokemons.setAttribute("class", "pokemonCards")
-    divPokemons.innerHTML = ""
     tittle.innerHTML = "Pokémon ordenados por número ascendente"
     array.forEach((pokemon) => {
         let pokemonCards = document.createElement("div")
-        const colorType = colors[pokemon.type]
-        const colorSecondType = colors[pokemon.secondType]
+        let type = pokemon.types[0].type.name
+        let colorType = color[pokemon.types[0].type.name]
         pokemonCards.innerHTML = `
         <div id="${pokemon.name}" class="card">
-            <img src="${pokemon.img}" alt="${pokemon.name}">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" alt="${pokemon.name}" style = "background: radial-gradiant( circle at 50% 0%, ${colorType} 36%, #ffffff 36%)">
             <div class="textBox">
-                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
-                <h3 class="pokemonName">${pokemon.name}</h3>
+                <p class="pokemonNumber">#${pokemon.id.toString().padStart(3, 0)}</p>
+                <h3 class="pokemonName">${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}</h3>
             </div>
             <div class="types">
-                <p class="pokemonType" style = "background-color: ${colorType}" >${pokemon.type}</p>
-                <p class= ${pokemon.secondType == "Ninguno" ? "typeNone" : "pokemonType"} style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
+            <p class="pokemonType" style = "background-color: ${colorType}">${type[0].toUpperCase() + type.slice(1)}</p>
             </div>
-            <button class="addTeam" id="${pokemon.pokedexNumber}">Agregar al equipo</button>
+            <button class="addTeam" id="${pokemon.id}">Capturar Pokémon</button>
         </div>`
         divPokemons.appendChild(pokemonCards)
-        let btnAdd = document.getElementById(`${pokemon.pokedexNumber}`)
+        let btnAdd = document.getElementById(`${pokemon.id}`)
         btnAdd.addEventListener("click", addPokemonTeam)
     })
 }
 
-//guardarStorage
+//Guardar en localStorage
 
 const saveStorage = (name, value) => {
     localStorage.setItem(name, JSON.stringify(value))
@@ -62,13 +89,13 @@ const saveStorage = (name, value) => {
 
 function orderNumberA(){
     divPokemons.innerHTML = ""
-    pokedex.sort((a,b)=> (a.pokedexNumber - b.pokedexNumber))
+    pokedex.sort((a,b)=> (a.id - b.id))
     cards(pokedex)
     tittle.innerHTML = "Pokémon ordenados por número ascendente"
 }
 function orderNumberD(){
     divPokemons.innerHTML = ""
-    pokedex.sort((a,b)=> (b.pokedexNumber - a.pokedexNumber))
+    pokedex.sort((a,b)=> (b.id - a.id))
     cards(pokedex)
     tittle.innerHTML = "Pokémon ordenados por número descendente"
 }
@@ -109,6 +136,7 @@ function random(){
 
 //Funcion para buscar cards
 const searchPokemon = () => {
+    divPokemons.innerHTML = ""
     const search = searchBar.value.toLowerCase()
     const results = pokedex.filter((pokemon) => pokemon.name.toLowerCase().includes(search))
     cards(results)
@@ -122,31 +150,30 @@ const pokemonsForTeamCard = (array) => {
     tittle.innerHTML = "Tu equipo"
     array.forEach((pokemon) => {
         let pokemonCards = document.createElement("div")
-        let colorType = colors[pokemon.type]
-        let colorSecondType = colors[pokemon.secondType]
+        let type = pokemon.types[0].type.name
+        let colorType = color[pokemon.types[0].type.name]
         pokemonCards.innerHTML = `
         <div id="${pokemon.name}" class="card">
-            <img src="${pokemon.img}" alt="${pokemon.name}">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" alt="${pokemon.name}">
             <div class="textBox">
-                <p class="pokemonNumber">Nº.${pokemon.pokedexNumber}</p>
-                <h3 class="pokemonName">${pokemon.name}</h3>
+                <p class="pokemonNumber">#${pokemon.id.toString().padStart(3, 0)}</p>
+                <h3 class="pokemonName">${pokemon.name[0].toUpperCase()+pokemon.name.slice(1)}</h3>
             </div>
             <div class="types">
-                <p class="pokemonType" style = "background-color: ${colorType}" >${pokemon.type}</p>
-                <p class= ${pokemon.secondType == "Ninguno" ? "typeNone" : "pokemonType"} style = "background-color: ${colorSecondType}">${pokemon.secondType}</p>
+            <p class="pokemonType" style = "background-color: ${colorType}">${type[0].toUpperCase() + type.slice(1)}</p>
             </div>
-            <button class="deleteTeam" id="${pokemon.pokedexNumber}">Eliminar Pokémon</button>
+            <button class="deleteTeam" id="${pokemon.id}">Liberar Pokémon</button>
         </div>`
         divPokemons.appendChild(pokemonCards)
     })
     array.forEach((pokemon, index)=>{
-        document.getElementById(`${pokemon.pokedexNumber}`).addEventListener('click', () => {
+        document.getElementById(`${pokemon.id}`).addEventListener('click', () => {
             let pokemonInFavorites = document.getElementById(`${pokemon.name}`)
             pokemonInFavorites.remove()
             array.splice(index, 1)
             saveStorage('teamPokemon', teamPokemon)
             Toastify({
-                text: `Eliminaste a ${pokemon.name} de tu equipo.`,
+                text: `Eliminaste a ${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)} de tu equipo.`,
                 duration: 3000,
                 gravity: "bottom",
                 style: {background: "#FF0000"},
@@ -190,13 +217,13 @@ const clearTeam = () => {
 }
 const addPokemonTeam = (e) => {
     const pokemonById = e.target.getAttribute('id')
-    const pokemonSelected = pokedex.find((pokemon) => pokemon.pokedexNumber == pokemonById)
-    teamPokemon.find((pokemon) => pokemon.pokedexNumber == pokemonById) == undefined ? (
+    const pokemonSelected = pokedex.find((pokemon) => pokemon.id == pokemonById)
+    teamPokemon.find((pokemon) => pokemon.id == pokemonById) == undefined ? (
         teamPokemon.length < 6 ? (
             teamPokemon.push(pokemonSelected),
             saveStorage('teamPokemon', teamPokemon),
             Toastify({
-                text: `${pokemonSelected.name} se ha unido a tu equipo.`,
+                text: `${pokemonSelected.name[0].toUpperCase() + pokemonSelected.name.slice(1)} se ha unido a tu equipo.`,
                 duration: 3000,
                 gravity: "bottom",
                 style: {background: "#0c950c"},
@@ -211,7 +238,7 @@ const addPokemonTeam = (e) => {
          )
     ):(
         Toastify({
-            text: `No puedes agregar a ${pokemonSelected.name} porque
+            text: `No puedes agregar a ${pokemonSelected.name[0].toUpperCase() + pokemonSelected.name.slice(1)} porque
             ya ha sido agregado previamente al equipo.`,
             duration: 3000,
             gravity: "bottom",
@@ -235,11 +262,9 @@ searchBar.addEventListener('input', searchPokemon)
 yourTeam.addEventListener('click', pokemonsForTeam)
 resetTeam.addEventListener('click', clearTeam)
 
-//Inicializacion 
+// //Inicializacion 
 
-cards(pokedex)
 
 teamPokemon = JSON.parse(localStorage.getItem('teamPokemon')) || []
-
 
 
