@@ -12,7 +12,6 @@ window.onload = async function() {
     for(let i = 1; i <= pokemonAmount; i++){
         await getPokemon(i)
     }
-    divLoader.remove()
     cards(pokedex)
 }
 
@@ -27,7 +26,6 @@ const randomOrder = document.getElementById('random')
 const yourTeam = document.getElementById('yourTeam')
 const resetTeam = document.getElementById('resetTeam')
 const tittle = document.getElementById('tittle')
-let divLoader = document.getElementById("loader")
 
 //Se crean variables con colores para luego utilizar cada una en las cards dependiendo el tipo.
 const color = {
