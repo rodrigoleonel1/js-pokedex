@@ -21,27 +21,49 @@
     	<nav class="navbar navbar-expand-lg">
       		<div class="content-header container-fluid">
         		<a class="navbar-brand" href="index.html">
-          		  <img src="./img/logo.png" alt="">
+          		  <img class="logo" src="./img/logo.png" alt="">
         		</a>
       		</div>
     	</nav>
   	</header>
     <main>
+        <!-- Botones de búsqueda y orden -->
         <div class="order">
             <p>Ordena los pokémon como mas te guste</p>
         </div>
         <div class="buttons container-fluid">
             <input type="text" name="searchBar" id="searchBar" placeholder="     Buscar por nombre">
-            <button class="button" id="orderNumberA">Número ascendente</button>
-            <button class="button" id="orderNumberD">Número descendente</button>
-            <button class="button" id="orderAlphabeticalA">Alfabético ascendente</button>
-            <button class="button" id="orderAlphabeticalD">Alfabético descendente</button>
-            <button class="button" id="random">Aleatoriamente</button>
-            <button class="button" id="yourTeam">Tu equipo</button>
-            <button class="button" id="resetTeam">Resetear equipo</button>
+            <button class="pokedexButton" id="orderNumberA">Número ascendente</button>
+            <button class="pokedexButton" id="orderNumberD">Número descendente</button>
+            <button class="pokedexButton" id="orderAlphabeticalA">Alfabético ascendente</button>
+            <button class="pokedexButton" id="orderAlphabeticalD">Alfabético descendente</button>
+            <button class="pokedexButton" id="random">Aleatoriamente</button>
+            <button class="pokedexButton" id="yourTeam">Tu equipo</button>
+            <button class="pokedexButton" id="resetTeam">Resetear equipo</button>
         </div>
-        <div id="tittle"></div>
-        <div class="row container-fluid" id="pokemons"></div>
+        <!-- Titulo de cards -->
+        <div id="title">
+            <!-- HTML desde JS -->
+        </div>
+        <!-- Cards -->
+        <div class="row container-fluid" id="pokemons">
+            <!-- HTML desde JS -->
+        </div>
+        <!-- Modal -->
+        <div class="modal" id="idModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- HTML desde JS -->
+                </div>
+                <div class="modalFooter">
+                </div>
+              </div>
+            </div>
+        </div>
     </main>
     <footer>
         <p>Developed by Rodrigo Alarcón</p>

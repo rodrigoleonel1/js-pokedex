@@ -1,21 +1,10 @@
+//Arrays
+
 const pokemonAmount = 898
 const pokedex = []
 let teamPokemon = []
 
-async function getPokemon(id){
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
-    const pokemonData = await res.json()
-    pokedex.push(pokemonData)
-}
-
-window.onload = async function() {
-    for(let i = 1; i <= pokemonAmount; i++){
-        await getPokemon(i)
-    }
-    cards(pokedex)
-}
-
-// Selectores
+//Selectores
 const divPokemons = document.getElementById('pokemons')
 const searchBar = document.getElementById('searchBar')
 const orderAlphabeticalAs = document.getElementById('orderAlphabeticalA')
@@ -25,77 +14,255 @@ const orderNumberDs = document.getElementById('orderNumberD')
 const randomOrder = document.getElementById('random')
 const yourTeam = document.getElementById('yourTeam')
 const resetTeam = document.getElementById('resetTeam')
-const tittle = document.getElementById('tittle')
-
-//Se crean variables con colores para luego utilizar cada una en las cards dependiendo el tipo.
-const color = {
-    steel: "#9eb7b8",
-    water: "#4592c4",
-    bug: "#bfc901",
-    dragon: "#97b3e6",
-    electric: "#eed535",
-    ghost: "#7b62a3",
-    fire: "#fd7d24",
-    fairy: "#fdb9e9",
-    ice: "#51c4e7",
-    fighting: "#ff5d5d",
-    normal: "#ddccaa",
-    grass: "#9bcc50",
-    psychic: "#f366b9",
-    rock: "#a38c21",
-    ground: "#caac4d",
-    poison: "#b97fc9",
-    flying: "#4193a4",
-    dark: "#a9a9a9"
-}
+const title = document.getElementById('title')
+const modalBody = document.getElementById("modal-body")
 
 //Funciones
+
+//Obtener pokémons desde la API
+async function getPokemon(id){
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
+    const pokemonData = await res.json()
+    pokedex.push(pokemonData)
+}
+
+//Cargar pokémons y cards al cargar la página
+window.onload = async function() {
+    for(let i = 1; i <= pokemonAmount; i++){
+        await getPokemon(i)
+    }
+    cards(pokedex)
+}
 
 //Funcion creadora de cards
 const cards = (array) => {
     divPokemons.setAttribute("class", "pokemonCards")
-    tittle.innerHTML = "Pokémon ordenados por número ascendente"
+    divPokemons.innerHTML = ""
+    title.innerHTML = "Pokémon ordenados por número ascendente"
     array.forEach((pokemon) => {
-        let pokemonCards = document.createElement("div")
-        let type = pokemon.types[0].type.name
-        let colorType = color[pokemon.types[0].type.name]
-        pokemonCards.innerHTML = `
-        <div id="${pokemon.name}" class="card">
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" alt="${pokemon.name}" style = "background: radial-gradiant( circle at 50% 0%, ${colorType} 36%, #ffffff 36%)">
-            <div class="textBox">
-                <p class="pokemonNumber">#${pokemon.id.toString().padStart(3, 0)}</p>
-                <h3 class="pokemonName">${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}</h3>
-            </div>
-            <div class="types">
-            <p class="pokemonType" style = "background-color: ${colorType}">${type[0].toUpperCase() + type.slice(1)}</p>
-            </div>
-            <button class="addTeam" id="${pokemon.id}">Capturar Pokémon</button>
-        </div>`
-        divPokemons.appendChild(pokemonCards)
-        let btnAdd = document.getElementById(`${pokemon.id}`)
+
+        const card = document.createElement("div")
+        card.classList.add("card")
+
+        const cardImgContainer = document.createElement("div")
+        cardImgContainer.classList.add("cardImgContainer")
+        cardImgContainer.classList.add(`${pokemon.types[0].type.name}`)
+
+        const cardImg = document.createElement("img")
+        cardImg.classList.add("cardImg")
+        cardImg.src = `${pokemon["sprites"]["other"]["official-artwork"]["front_default"]}`
+        cardImg.alt = `${pokemon.name}`
+
+        const textBox = document.createElement("div")
+        textBox.classList.add("textBox")
+
+        const pokemonNumber = document.createElement("p")
+        pokemonNumber.classList.add("pokemonNumber")
+        pokemonNumber.innerText = `#${pokemon.id.toString().padStart(3, 0)}`
+
+        const pokemonName = document.createElement("h3")
+        pokemonName.classList.add("pokemonName")
+        pokemonName.innerText = `${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}`
+
+        const btnAdd = document.createElement("button")
+        btnAdd.classList.add("addTeam")
+        btnAdd.innerText = "Capturar Pokémon"
+        btnAdd.setAttribute("id", `${pokemon.id}`)
         btnAdd.addEventListener("click", addPokemonTeam)
+
+        const btnDetails = document.createElement("button")
+        btnDetails.classList.add("details")
+        btnDetails.innerText = "Ver detalles"
+        btnDetails.setAttribute("id", `${pokemon.species.name}`)
+        btnDetails.setAttribute("data-bs-toggle", `modal`)
+        btnDetails.setAttribute("data-bs-target", `#idModal`)
+        btnDetails.addEventListener("click", modalDetails)
+
+        divPokemons.appendChild(card)
+        card.appendChild(cardImgContainer)
+        cardImgContainer.appendChild(cardImg)
+        card.appendChild(textBox)
+        textBox.appendChild(pokemonNumber)
+        textBox.appendChild(pokemonName)
+        card.appendChild(btnAdd)
+        card.appendChild(btnDetails)
     })
 }
 
-//Guardar en localStorage
+//Modal de detalles
 
+function modalDetails(e){
+    modalBody.innerHTML= " "
+    const pokemonByName = e.target.getAttribute('id')
+    const pokemonSelected = pokedex.find((pokemon) => pokemon.species.name == pokemonByName)
+
+    // Titutilo del modal
+    const modalTitle = document.createElement("div")
+    modalTitle.classList.add("modalTitle")
+
+    const modalTitleName = document.createElement("p")
+    modalTitleName.classList.add("modalTitleName")
+    modalTitleName.textContent = `${pokemonSelected["species"]["name"][0].toUpperCase() + pokemonSelected["species"]["name"].slice(1)}`
+
+    const modalTitleId = document.createElement("span")
+    modalTitleId.classList.add("modalTitleId")
+    modalTitleId.textContent = `#${pokemonSelected["id"].toString().padStart(3, 0)}`
+
+    modalBody.appendChild(modalTitle)
+    modalTitle.appendChild(modalTitleName)
+    modalTitleName.appendChild(modalTitleId)
+
+    // Contenido del modal 
+    const modalContent = document.createElement("div")
+    modalContent.classList.add("modalContent")
+
+    modalBody.appendChild(modalContent)
+
+    // Left side del modal
+    const modalContentLeft = document.createElement("div")
+    modalContentLeft.classList.add("modalContentLeft")
+
+    const modalImgContainer = document.createElement("div")
+    modalImgContainer.classList.add("modalImgContainer")
+  
+    const modalImg = document.createElement("img")
+    modalImg.classList.add("modalImg")
+    modalImg.src = `${pokemonSelected["sprites"]["other"]["official-artwork"]["front_default"]}`
+  
+    modalContent.appendChild(modalContentLeft)
+    modalContentLeft.appendChild(modalImgContainer)
+    modalImgContainer.appendChild(modalImg)
+    modalContentLeft.appendChild(pokemonTypes(pokemonSelected))
+    modalContentLeft.appendChild(pokemonAbilities(pokemonSelected))
+
+    // Right side del modal
+
+    const modalContentRight = document.createElement("div")
+    modalContentRight.classList.add("modalContentRight")
+
+    const dataContainer = document.createElement("div")
+    dataContainer.classList.add("dataContainer")
+
+    const pokemonHeight = document.createElement("p")
+    pokemonHeight.classList.add("pokemonHeight")    
+    if(pokemonSelected["height"].toString().length == "1"){
+        pokemonHeight.textContent =  `Altura: 0,${pokemonSelected["height"]} m`
+    }else if(pokemonSelected["height"].toString().length == "2"){
+        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString()[0] + "," + pokemonSelected["height"].toString().slice(1)} m`
+    }else if(pokemonSelected["height"].toString().length == "3" ){
+        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString().slice(0,2) + "," + pokemonSelected["height"].toString().slice(2)}m`
+    }
+
+    const pokemonWeight = document.createElement("p")
+    pokemonWeight.classList.add("pokemonWeight")
+    if(pokemonSelected["weight"].toString().length == "1"){
+        pokemonWeight.textContent =  `Peso: 0,${pokemonSelected["weight"]} kg`
+    }else if(pokemonSelected["weight"].toString().length == "2"){
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString()[0] + "," + pokemonSelected["weight"].toString().slice(1)} kg`
+    }else if(pokemonSelected["weight"].toString().length == "3" ){
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,2) + "," + pokemonSelected["weight"].toString().slice(2)} kg`
+    }else if(pokemonSelected["weight"].toString().length == "4" ){
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,3) + "," + pokemonSelected["weight"].toString().slice(3)}kg`
+    }
+
+    const pokemonXp = document.createElement("p")
+    pokemonXp.classList.add("pokemonXp")
+    pokemonXp.textContent = `Experiencia base: ${pokemonSelected["base_experience"]}xp`
+
+    modalContent.appendChild(modalContentRight)
+    modalContentRight.appendChild(pokemonStats(pokemonSelected.stats))
+    modalContentRight.appendChild(dataContainer)
+    dataContainer.appendChild(pokemonHeight)
+    dataContainer.appendChild(pokemonWeight)
+    dataContainer.appendChild(pokemonXp)
+
+}
+
+//Función para las estadísticas de cada pokémon
+function pokemonStats(stats) {
+    const statsContainer = document.createElement("div")
+    statsContainer.classList.add("statsContainer")
+  
+    for (let i = 0; i < 6; i++) {
+      const stat = stats[i];
+  
+      const statPercent = stat.base_stat + "%"
+      const statContainer = document.createElement("div")
+      statContainer.classList.add("statContainer")
+  
+      const statName = document.createElement("p")
+      statName.textContent = stat["stat"]["name"][0].toUpperCase() + stat["stat"]["name"].slice(1)
+  
+      const progress = document.createElement("div")
+      progress.classList.add("progress")
+  
+      const progressBar = document.createElement("div")
+      progressBar.classList.add("progress-bar")
+      progressBar.setAttribute("aria-valuenow", stat.base_stat)
+      progressBar.setAttribute("aria-valuemin", 0)
+      progressBar.setAttribute("aria-valuemax", 100)
+      progressBar.style.width = statPercent
+      if(stat.base_stat > "100"){
+        progressBar.style.background = "#FF4500"
+      }
+      progressBar.textContent = stat.base_stat
+  
+      progress.appendChild(progressBar)
+      statContainer.appendChild(statName)
+      statContainer.appendChild(progress)
+      statsContainer.appendChild(statContainer)
+    }
+    return statsContainer;
+}
+
+//Función para los tipos de cada pokémon
+function pokemonTypes(pokemon){
+    const modalTypes = document.createElement("div")
+    modalTypes.classList.add("modalTypes")
+    modalTypes.textContent = "Tipos:"
+    let types = pokemon.types
+    for (let i = 0; i < types.length; i++) {
+        let type = document.createElement("span")
+        type.innerText = types[i]["type"]["name"][0].toUpperCase() + types[i]["type"]["name"].slice(1)
+        type.classList.add("pokemonType")
+        type.classList.add(types[i]["type"]["name"])
+        modalTypes.appendChild(type)
+    }
+    return modalTypes
+}
+
+//Función para las habilidades de cada pokémon
+function pokemonAbilities(pokemon){
+    const modalAbilities = document.createElement("div")
+    modalAbilities.classList.add("modalAbilities")
+    modalAbilities.textContent = "Habilidades:"
+    let abilities = pokemon.abilities
+    for (let i = 0; i < abilities.length; i++) {
+        let ability = document.createElement("span")
+        ability.innerText = abilities[i]["ability"]["name"][0].toUpperCase() + abilities[i]["ability"]["name"].slice(1) 
+        ability.classList.add("pokemonAbility")
+        modalAbilities.appendChild(ability)
+    }
+    return modalAbilities
+}
+
+//Guardar en localStorage
 const saveStorage = (name, value) => {
     localStorage.setItem(name, JSON.stringify(value))
 }
 
 //Funciones para ordenar cards
-
 function orderNumberA(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b)=> (a.id - b.id))
     cards(pokedex)
-    tittle.innerHTML = "Pokémon ordenados por número ascendente"
+    title.innerHTML = "Pokémon ordenados por número ascendente"
 }
 function orderNumberD(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b)=> (b.id - a.id))
     cards(pokedex)
-    tittle.innerHTML = "Pokémon ordenados por número descendente"
+    title.innerHTML = "Pokémon ordenados por número descendente"
 }
 function orderAlphabeticalA(){
     divPokemons.innerHTML = ""
@@ -109,7 +276,7 @@ function orderAlphabeticalA(){
         return 0;
     })
     cards(pokedex)
-    tittle.innerHTML = "Pokémon ordenados por A-Z"
+    title.innerHTML = "Pokémon ordenados por A-Z"
 }
 function orderAlphabeticalD(){
     divPokemons.innerHTML = ""
@@ -123,50 +290,78 @@ function orderAlphabeticalD(){
         return 0;
     })
     cards(pokedex)
-    tittle.innerHTML = "Pokémon ordenados por Z-A"
+    title.innerHTML = "Pokémon ordenados por Z-A"
 }
 function random(){
     divPokemons.innerHTML = ""
     pokedex.sort(() => Math.random() - 0.5)
     cards(pokedex)
-    tittle.innerHTML = "Generador de orden random"
+    title.innerHTML = "Generador de orden random"
 }
 
-//Funcion para buscar cards
+//Funcion para buscar pokémons
 const searchPokemon = () => {
     divPokemons.innerHTML = ""
     const search = searchBar.value.toLowerCase()
     const results = pokedex.filter((pokemon) => pokemon.name.toLowerCase().includes(search))
     cards(results)
-    tittle.innerHTML = "Resultados de la búsqueda"
+    title.innerHTML = "Resultados de la búsqueda"
 }
 
-//Funciones para Equipo Pokemon
+//Cards para Equipo Pokémon
 const pokemonsForTeamCard = (array) => {
     divPokemons.setAttribute("class", "pokemonCards")
     divPokemons.innerHTML = ""
-    tittle.innerHTML = "Tu equipo"
+    title.innerHTML = "Tu equipo"
     array.forEach((pokemon) => {
-        let pokemonCards = document.createElement("div")
-        let type = pokemon.types[0].type.name
-        let colorType = color[pokemon.types[0].type.name]
-        pokemonCards.innerHTML = `
-        <div id="${pokemon.name}" class="card">
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png" alt="${pokemon.name}">
-            <div class="textBox">
-                <p class="pokemonNumber">#${pokemon.id.toString().padStart(3, 0)}</p>
-                <h3 class="pokemonName">${pokemon.name[0].toUpperCase()+pokemon.name.slice(1)}</h3>
-            </div>
-            <div class="types">
-            <p class="pokemonType" style = "background-color: ${colorType}">${type[0].toUpperCase() + type.slice(1)}</p>
-            </div>
-            <button class="deleteTeam" id="${pokemon.id}">Liberar Pokémon</button>
-        </div>`
-        divPokemons.appendChild(pokemonCards)
+        const card = document.createElement("div")
+        card.classList.add("card")
+
+        const cardImgContainer = document.createElement("div")
+        cardImgContainer.classList.add("cardImgContainer")
+        cardImgContainer.classList.add(`${pokemon.types[0].type.name}`)
+
+        const cardImg = document.createElement("img")
+        cardImg.classList.add("cardImg")
+        cardImg.src = `${pokemon["sprites"]["other"]["official-artwork"]["front_default"]}`
+        cardImg.alt = `${pokemon.name}`
+
+        const textBox = document.createElement("div")
+        textBox.classList.add("textBox")
+
+        const pokemonNumber = document.createElement("p")
+        pokemonNumber.classList.add("pokemonNumber")
+        pokemonNumber.innerText = `#${pokemon.id.toString().padStart(3, 0)}`
+
+        const pokemonName = document.createElement("h3")
+        pokemonName.classList.add("pokemonName")
+        pokemonName.innerText = `${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}`
+
+        const btnDelete = document.createElement("button")
+        btnDelete.classList.add("deleteTeam")
+        btnDelete.innerText = "Liberar Pokémon"
+        btnDelete.setAttribute("id", `${pokemon.id}`)
+
+        const btnDetails = document.createElement("button")
+        btnDetails.classList.add("details")
+        btnDetails.innerText = "Ver detalles"
+        btnDetails.setAttribute("id", `${pokemon.species.name}`)
+        btnDetails.setAttribute("data-bs-toggle", `modal`)
+        btnDetails.setAttribute("data-bs-target", `#idModal`)
+        btnDetails.addEventListener("click", modalDetails)
+
+        divPokemons.appendChild(card)
+        card.appendChild(cardImgContainer)
+        cardImgContainer.appendChild(cardImg)
+        card.appendChild(textBox)
+        textBox.appendChild(pokemonNumber)
+        textBox.appendChild(pokemonName)
+        card.appendChild(btnDelete)
+        card.appendChild(btnDetails)
     })
     array.forEach((pokemon, index)=>{
         document.getElementById(`${pokemon.id}`).addEventListener('click', () => {
-            let pokemonInFavorites = document.getElementById(`${pokemon.name}`)
+            let pokemonInFavorites = document.getElementById(`${pokemon.id}`)
             pokemonInFavorites.remove()
             array.splice(index, 1)
             saveStorage('teamPokemon', teamPokemon)
@@ -180,6 +375,7 @@ const pokemonsForTeamCard = (array) => {
         })  
     })
 }
+//Limpiar Equipo Pokémon
 const clearTeam = () => {
     teamPokemon.length == 0 ? (
         Swal.fire({
@@ -213,6 +409,7 @@ const clearTeam = () => {
         })
     )
 }
+//Agregar pokémon al equipo
 const addPokemonTeam = (e) => {
     const pokemonById = e.target.getAttribute('id')
     const pokemonSelected = pokedex.find((pokemon) => pokemon.id == pokemonById)
@@ -244,13 +441,13 @@ const addPokemonTeam = (e) => {
             }).showToast()
     )
 }
+//Cargar cards de Equipo Pokémon
 const pokemonsForTeam = () =>{
     divPokemons.innerHTML = ""
     pokemonsForTeamCard(teamPokemon)
 }
 
 //EventListeners
-
 orderAlphabeticalAs.addEventListener("click", orderAlphabeticalA)
 orderAlphabeticalDs.addEventListener("click", orderAlphabeticalD)
 orderNumberAs.addEventListener("click", orderNumberA)
@@ -260,9 +457,7 @@ searchBar.addEventListener('input', searchPokemon)
 yourTeam.addEventListener('click', pokemonsForTeam)
 resetTeam.addEventListener('click', clearTeam)
 
-// //Inicializacion 
-
-
+//Inicialización 
 teamPokemon = JSON.parse(localStorage.getItem('teamPokemon')) || []
 
 

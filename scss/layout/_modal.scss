@@ -1,0 +1,57 @@
+/*Modal*/
+
+.modal-body{
+    font-family: 'Kanit', sans-serif;
+    .modalTitle{
+        display: flex;
+        justify-content: center;
+        .modalTitleName{
+            font-size: 2em;
+            .modalTitleId{
+                margin-left: 10px;
+                color: #616161;
+            }
+        }
+    }
+    .modalContent{
+        display: flex;
+        flex-direction: column;
+         @media(min-width: 769px) {
+            flex-direction: row;
+        }
+        .modalContentLeft, .modalContentRight{
+            width: 90%;
+            margin: auto;
+            @media(min-width: 769px) {
+                width: 50%;
+            }
+        }
+        .modalContentLeft{
+            text-align: center;
+            .modalImg{
+                max-width: 100%;
+            }
+            .pokemonType, .pokemonAbility{
+                margin: 0px 10px;
+            }    
+            .pokemonType{
+                border-radius: 5px;
+                padding: 0px 20px;
+            }
+        }
+        .modalContentRight{
+            .dataContainer{
+                margin-top: 20px;
+            }
+            .statsContainer {
+                .progress{
+                    background-color: silver;
+                }
+                p{
+                    margin: 0px;
+                    margin-top: 20px;
+                }
+            }
+        }
+    }
+}
