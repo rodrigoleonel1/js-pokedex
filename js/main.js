@@ -1,21 +1,26 @@
 //Arrays
-
-const pokemonAmount = 898
 const pokedex = []
 let teamPokemon = []
 
+//Cantidad de pokémons traidos de la API
+const pokemonAmount = 251
+
 //Selectores
+const buttonsContainer = document.getElementById('buttonsContainer')
 const divPokemons = document.getElementById('pokemons')
 const searchBar = document.getElementById('searchBar')
-const orderAlphabeticalAs = document.getElementById('orderAlphabeticalA')
-const orderAlphabeticalDs = document.getElementById('orderAlphabeticalD')
-const orderNumberAs = document.getElementById('orderNumberA')
-const orderNumberDs = document.getElementById('orderNumberD')
-const randomOrder = document.getElementById('random')
-const yourTeam = document.getElementById('yourTeam')
-const resetTeam = document.getElementById('resetTeam')
-const title = document.getElementById('title')
+const searchBtn = document.getElementById('searchBtn')
+const orderAlphabeticalUpwardBtn = document.getElementById('orderAlphabeticalA')
+const orderAlphabeticalDescendBtn = document.getElementById('orderAlphabeticalD')
+const orderNumberUpwardBtn = document.getElementById('orderNumberA')
+const orderNumberDescendBtn = document.getElementById('orderNumberD')
+const orderRandomBtn = document.getElementById('random')
+const showTeamBtn = document.getElementById('yourTeam')
+const resetTeamBtn = document.getElementById('resetTeam')
+const cardsTitle = document.getElementById('title')
 const modalBody = document.getElementById("modal-body")
+const btnUp = document.getElementById('btnUp')
+const loader = document.getElementById('loader')
 
 //Funciones
 
@@ -32,44 +37,47 @@ window.onload = async function() {
         await getPokemon(i)
     }
     cards(pokedex)
+    //El loader desaparece al cargar las cards y aparecen los botones de la pokédex
+    loader.style.display = "none"
+    buttonsContainer.style.display = "inline"
 }
 
 //Funcion creadora de cards
 const cards = (array) => {
     divPokemons.setAttribute("class", "pokemonCards")
     divPokemons.innerHTML = ""
-    title.innerHTML = "Pokémon ordenados por número ascendente"
+    cardsTitle.innerHTML = "Pokémons ordenados por número ascendente"
     array.forEach((pokemon) => {
-
+        //Div card
         const card = document.createElement("div")
         card.classList.add("card")
-
+        //Div contenedor de la imagen 
         const cardImgContainer = document.createElement("div")
         cardImgContainer.classList.add("cardImgContainer")
         cardImgContainer.classList.add(`${pokemon.types[0].type.name}`)
-
+        //Imagen del pokémon
         const cardImg = document.createElement("img")
         cardImg.classList.add("cardImg")
         cardImg.src = `${pokemon["sprites"]["other"]["official-artwork"]["front_default"]}`
         cardImg.alt = `${pokemon.name}`
-
+        //Div contenedor del texto de la card
         const textBox = document.createElement("div")
         textBox.classList.add("textBox")
-
+        //Número ID del pokémon
         const pokemonNumber = document.createElement("p")
         pokemonNumber.classList.add("pokemonNumber")
         pokemonNumber.innerText = `#${pokemon.id.toString().padStart(3, 0)}`
-
+        //Nombre del pokémon
         const pokemonName = document.createElement("h3")
         pokemonName.classList.add("pokemonName")
         pokemonName.innerText = `${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}`
-
+        //Boton para añadir pokémon al equipo
         const btnAdd = document.createElement("button")
         btnAdd.classList.add("addTeam")
         btnAdd.innerText = "Capturar Pokémon"
         btnAdd.setAttribute("id", `${pokemon.id}`)
         btnAdd.addEventListener("click", addPokemonTeam)
-
+        //Boton para ver modal de detalles del pokémon
         const btnDetails = document.createElement("button")
         btnDetails.classList.add("details")
         btnDetails.innerText = "Ver detalles"
@@ -78,6 +86,7 @@ const cards = (array) => {
         btnDetails.setAttribute("data-bs-target", `#idModal`)
         btnDetails.addEventListener("click", modalDetails)
 
+        //Añadir cada parte de la card para renderizarla
         divPokemons.appendChild(card)
         card.appendChild(cardImgContainer)
         cardImgContainer.appendChild(cardImg)
@@ -89,7 +98,7 @@ const cards = (array) => {
     })
 }
 
-//Modal de detalles
+//Función creadora de los modales con los detalles de los pokémons
 
 function modalDetails(e){
     modalBody.innerHTML= " "
@@ -136,7 +145,6 @@ function modalDetails(e){
     modalContentLeft.appendChild(pokemonAbilities(pokemonSelected))
 
     // Right side del modal
-
     const modalContentRight = document.createElement("div")
     modalContentRight.classList.add("modalContentRight")
 
@@ -145,30 +153,36 @@ function modalDetails(e){
 
     const pokemonHeight = document.createElement("p")
     pokemonHeight.classList.add("pokemonHeight")    
+    //Se trabaja el dato desde la API de la altura del pokémon como array para que dependiendo de cuantos dígitos tenga la altura del pokémon seleccionado se agregue la "," en el lugar correspondiente
     if(pokemonSelected["height"].toString().length == "1"){
-        pokemonHeight.textContent =  `Altura: 0,${pokemonSelected["height"]} m`
+        //Si tiene un dígito se agrega un "0" adelante, la "," y luego el dígito Ej:(Altura: 0,1m)
+        pokemonHeight.textContent =  `Altura: 0,${pokemonSelected["height"]} m` 
     }else if(pokemonSelected["height"].toString().length == "2"){
-        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString()[0] + "," + pokemonSelected["height"].toString().slice(1)} m`
+        //Si tiene dos dígitos se agrega la "," entre los dos dígitos Ej:(Altura: 1,1m)
+        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString()[0] + "," + pokemonSelected["height"].toString().slice(1)} m` 
     }else if(pokemonSelected["height"].toString().length == "3" ){
-        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString().slice(0,2) + "," + pokemonSelected["height"].toString().slice(2)}m`
+        //Si tiene tres dígitos se agrega la "," luego del segundo dígito Ej:(Altura: 11,1m)
+        pokemonHeight.textContent = `Altura: ${pokemonSelected["height"].toString().slice(0,2) + "," + pokemonSelected["height"].toString().slice(2)}m` 
     }
 
     const pokemonWeight = document.createElement("p")
     pokemonWeight.classList.add("pokemonWeight")
+    //Utilizando el mismo razonamiento que con la altura de los pokémons, se realiza el mismo procedimiento con el peso del pokémon
     if(pokemonSelected["weight"].toString().length == "1"){
-        pokemonWeight.textContent =  `Peso: 0,${pokemonSelected["weight"]} kg`
+        pokemonWeight.textContent =  `Peso: 0,${pokemonSelected["weight"]} kg` //Ej:(Peso: 0,1kg)
     }else if(pokemonSelected["weight"].toString().length == "2"){
-        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString()[0] + "," + pokemonSelected["weight"].toString().slice(1)} kg`
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString()[0] + "," + pokemonSelected["weight"].toString().slice(1)} kg` //Ej:(Peso: 1,1kg)
     }else if(pokemonSelected["weight"].toString().length == "3" ){
-        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,2) + "," + pokemonSelected["weight"].toString().slice(2)} kg`
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,2) + "," + pokemonSelected["weight"].toString().slice(2)} kg` //Ej:(Peso: 11,1kg)
     }else if(pokemonSelected["weight"].toString().length == "4" ){
-        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,3) + "," + pokemonSelected["weight"].toString().slice(3)}kg`
+        pokemonWeight.textContent = `Peso: ${pokemonSelected["weight"].toString().slice(0,3) + "," + pokemonSelected["weight"].toString().slice(3)}kg` //Ej:(Peso: 111,1kg)
     }
 
     const pokemonXp = document.createElement("p")
     pokemonXp.classList.add("pokemonXp")
     pokemonXp.textContent = `Experiencia base: ${pokemonSelected["base_experience"]}xp`
 
+    //Añadir cada parte del modal para renderizarlo
     modalContent.appendChild(modalContentRight)
     modalContentRight.appendChild(pokemonStats(pokemonSelected.stats))
     modalContentRight.appendChild(dataContainer)
@@ -182,44 +196,51 @@ function modalDetails(e){
 function pokemonStats(stats) {
     const statsContainer = document.createElement("div")
     statsContainer.classList.add("statsContainer")
-  
+    
+    //Para cada estadistica del pokémon se crea una barra de progreso correspondiente al valor de la estadística y se la agrega al div que contiene todas las estadísticas
     for (let i = 0; i < 6; i++) {
-      const stat = stats[i];
-  
-      const statPercent = stat.base_stat + "%"
-      const statContainer = document.createElement("div")
-      statContainer.classList.add("statContainer")
-  
-      const statName = document.createElement("p")
-      statName.textContent = stat["stat"]["name"][0].toUpperCase() + stat["stat"]["name"].slice(1)
-  
-      const progress = document.createElement("div")
-      progress.classList.add("progress")
-  
-      const progressBar = document.createElement("div")
-      progressBar.classList.add("progress-bar")
-      progressBar.setAttribute("aria-valuenow", stat.base_stat)
-      progressBar.setAttribute("aria-valuemin", 0)
-      progressBar.setAttribute("aria-valuemax", 100)
-      progressBar.style.width = statPercent
-      if(stat.base_stat > "100"){
-        progressBar.style.background = "#FF4500"
-      }
-      progressBar.textContent = stat.base_stat
-  
-      progress.appendChild(progressBar)
-      statContainer.appendChild(statName)
-      statContainer.appendChild(progress)
-      statsContainer.appendChild(statContainer)
+        const stat = stats[i];
+        const statPercent = stat.base_stat + "%"
+        //Contenedor para cada estadística
+        const statContainer = document.createElement("div")
+        statContainer.classList.add("statContainer")
+        //Nombre de la estadística
+        const statName = document.createElement("p")
+        statName.textContent = stat["stat"]["name"][0].toUpperCase() + stat["stat"]["name"].slice(1)
+        //Contenedor de la barra de progreso
+        const progress = document.createElement("div")
+        progress.classList.add("progress")
+        //Barra de progreso
+        const progressBar = document.createElement("div")
+        progressBar.classList.add("progress-bar")
+        progressBar.setAttribute("aria-valuenow", stat.base_stat)
+        progressBar.setAttribute("aria-valuemin", 0)
+        progressBar.setAttribute("aria-valuemax", 100)
+        progressBar.style.width = statPercent
+        //Si la estadistica es mayor a 100 puntos se la pinta de un color distinto
+        if(stat.base_stat > "100"){
+            progressBar.style.background = "#FF4500" 
+        }
+        //Puntos de las estadística dentro de la barra de progreso
+        progressBar.textContent = stat.base_stat
+      
+        //Añadir cada parte del modal para renderizarlo
+        progress.appendChild(progressBar)
+        statContainer.appendChild(statName)
+        statContainer.appendChild(progress)
+        statsContainer.appendChild(statContainer)
     }
+    //Retorna un div con todas las estadísticas de cada pokémon que luego se agrega al modal
     return statsContainer;
 }
 
 //Función para los tipos de cada pokémon
 function pokemonTypes(pokemon){
+    //Div contenedor de los tipos de cada pokémon
     const modalTypes = document.createElement("div")
     modalTypes.classList.add("modalTypes")
     modalTypes.textContent = "Tipos:"
+    //Para cada tipo del pokémon se crea un div con el nombre del tipo y se le agrega la clase con el nombre que están definidas en CSS y les da el color correspondiente
     let types = pokemon.types
     for (let i = 0; i < types.length; i++) {
         let type = document.createElement("span")
@@ -228,11 +249,13 @@ function pokemonTypes(pokemon){
         type.classList.add(types[i]["type"]["name"])
         modalTypes.appendChild(type)
     }
+    //Retorna un div con todos los tipos de cada pokémon que luego se agrega al modal
     return modalTypes
 }
 
 //Función para las habilidades de cada pokémon
 function pokemonAbilities(pokemon){
+    //Utilizando el mismo razonamiento que con los tipos de los pokémons, se realiza el mismo procedimiento con las habilidades del pokémon
     const modalAbilities = document.createElement("div")
     modalAbilities.classList.add("modalAbilities")
     modalAbilities.textContent = "Habilidades:"
@@ -243,76 +266,16 @@ function pokemonAbilities(pokemon){
         ability.classList.add("pokemonAbility")
         modalAbilities.appendChild(ability)
     }
+    //Retorna un div con todas las habilidades de cada pokémon que luego se agrega al modal
     return modalAbilities
-}
-
-//Guardar en localStorage
-const saveStorage = (name, value) => {
-    localStorage.setItem(name, JSON.stringify(value))
-}
-
-//Funciones para ordenar cards
-function orderNumberA(){
-    divPokemons.innerHTML = ""
-    pokedex.sort((a,b)=> (a.id - b.id))
-    cards(pokedex)
-    title.innerHTML = "Pokémon ordenados por número ascendente"
-}
-function orderNumberD(){
-    divPokemons.innerHTML = ""
-    pokedex.sort((a,b)=> (b.id - a.id))
-    cards(pokedex)
-    title.innerHTML = "Pokémon ordenados por número descendente"
-}
-function orderAlphabeticalA(){
-    divPokemons.innerHTML = ""
-    pokedex.sort((a,b) => {
-        if(a.name < b.name){
-            return -1;
-        }
-        if(a.name > b.name){
-            return 1;
-        }
-        return 0;
-    })
-    cards(pokedex)
-    title.innerHTML = "Pokémon ordenados por A-Z"
-}
-function orderAlphabeticalD(){
-    divPokemons.innerHTML = ""
-    pokedex.sort((a,b) => {
-        if(a.name < b.name){
-            return 1;
-        }
-        if(a.name > b.name){
-            return -1;
-        }
-        return 0;
-    })
-    cards(pokedex)
-    title.innerHTML = "Pokémon ordenados por Z-A"
-}
-function random(){
-    divPokemons.innerHTML = ""
-    pokedex.sort(() => Math.random() - 0.5)
-    cards(pokedex)
-    title.innerHTML = "Generador de orden random"
-}
-
-//Funcion para buscar pokémons
-const searchPokemon = () => {
-    divPokemons.innerHTML = ""
-    const search = searchBar.value.toLowerCase()
-    const results = pokedex.filter((pokemon) => pokemon.name.toLowerCase().includes(search))
-    cards(results)
-    title.innerHTML = "Resultados de la búsqueda"
 }
 
 //Cards para Equipo Pokémon
 const pokemonsForTeamCard = (array) => {
+    //Utilizando el mismo razonamiento que con las cards para todos los pokémons se realiza el mismo procedimiento con las cards de los pokémon dentro del equipo
     divPokemons.setAttribute("class", "pokemonCards")
     divPokemons.innerHTML = ""
-    title.innerHTML = "Tu equipo"
+    cardsTitle.innerHTML = "Tu equipo"
     array.forEach((pokemon) => {
         const card = document.createElement("div")
         card.classList.add("card")
@@ -359,10 +322,11 @@ const pokemonsForTeamCard = (array) => {
         card.appendChild(btnDelete)
         card.appendChild(btnDetails)
     })
+    //Se le agrega la funcionalidad de eliminar pokémon del equipo al botón "Liberar Pokémon"
     array.forEach((pokemon, index)=>{
         document.getElementById(`${pokemon.id}`).addEventListener('click', () => {
-            let pokemonInFavorites = document.getElementById(`${pokemon.id}`)
-            pokemonInFavorites.remove()
+            let pokemonInTeam = document.getElementById(`${pokemon.id}`)
+            pokemonInTeam.remove()
             array.splice(index, 1)
             saveStorage('teamPokemon', teamPokemon)
             Toastify({
@@ -375,22 +339,24 @@ const pokemonsForTeamCard = (array) => {
         })  
     })
 }
-//Limpiar Equipo Pokémon
+//Limpiar equipo pokémon
 const clearTeam = () => {
+    //Si el equipo ya se encuentra vacío se informa que no se puede vaciar
     teamPokemon.length == 0 ? (
         Swal.fire({
-            title: "Tu equipo Pokémon ya se encuentra vacio",
+            title: "Tu equipo Pokémon ya se encuentra vacío.",
             icon: "warning",
             timer: 1500,
             showConfirmButton: false
         })
     ):(
+        //Si el equipo cuenta con al menos pokémon se pide una confirmación mediante un Sweet Alert para vaciar el equipo o para cancelar la acción
         Swal.fire({
             title: "Perderas todos tus Pokémon.",
             text: `¿Estás seguro de eliminar todo tu equipo?`,
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Si, estoy seguro.",
+            confirmButtonText: "Sí, estoy seguro.",
             cancelButtonText: "No, no quiero.",
         }).then((result) => {
             if(result.isConfirmed){
@@ -399,7 +365,7 @@ const clearTeam = () => {
                 divPokemons.innerHTML = ""
                 Swal.fire({
                     title: "Equipo vaciado.",
-                    text: `Tu equipo esta vacio, puedes agregar nuevos Pokémon para completar tu equipo.`,
+                    text: `Tu equipo esta vacío, puedes agregar nuevos Pokémon para completar tu equipo.`,
                     icon: "success",
                     timer: 1500,
                     showConfirmButton: false
@@ -411,12 +377,16 @@ const clearTeam = () => {
 }
 //Agregar pokémon al equipo
 const addPokemonTeam = (e) => {
+    //Se toma el ID del pokémon que se quiere agregar al equipo
     const pokemonById = e.target.getAttribute('id')
     const pokemonSelected = pokedex.find((pokemon) => pokemon.id == pokemonById)
+    //Si el pokémon no se encuentra en el equipo se pasa al siguiente condicional 
     teamPokemon.find((pokemon) => pokemon.id == pokemonById) == undefined ? (
+        //Si el equipo tiene menos de 6 pokémons se agrega el pokémon al equipo y se guarda en el local storage
         teamPokemon.length < 6 ? (
             teamPokemon.push(pokemonSelected),
             saveStorage('teamPokemon', teamPokemon),
+            //Se muestra en un Toastify que el pokémon fue agregado al equipo con éxito
             Toastify({
                 text: `${pokemonSelected.name[0].toUpperCase() + pokemonSelected.name.slice(1)} se ha unido a tu equipo.`,
                 duration: 3000,
@@ -425,6 +395,7 @@ const addPokemonTeam = (e) => {
                 onClick: () => pokemonsForTeam(),
                 }).showToast()
          ) : (
+            //Si el equipo cuenta con 6 pokémons se informa con un Sweet Alert que el equipo esta completo y no se pueden agregar mas pokémons
             Swal.fire({
                 text: "El equipo tiene un máximo de 6 Pokémon, no puedes agregar más.",
                 icon: "error",
@@ -432,32 +403,153 @@ const addPokemonTeam = (e) => {
             })
          )
     ):(
+        //Si el pokémon se encuentra en el equipo se informa con un Toastify que no se puede agregar otra vez
         Toastify({
             text: `No puedes agregar a ${pokemonSelected.name[0].toUpperCase() + pokemonSelected.name.slice(1)} porque
             ya ha sido agregado previamente al equipo.`,
             duration: 3000,
             gravity: "bottom",
             style: {background: "#2a75bb"},
-            }).showToast()
+        }).showToast()
     )
 }
 //Cargar cards de Equipo Pokémon
 const pokemonsForTeam = () =>{
+    //Si el equipo esta vacío se informa con un Sweet Alert y se cargan todas las cards
+    if(teamPokemon.length== 0){
+        Swal.fire({
+            title: "Tu equipo se encuentra vacío, captura algunos Pokémons primero.",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: false
+        })
+        cards(pokedex)
+    }
+    //Si el equipo tiene al menos un pokémon se muestran las cards con los pokémon del equipo
+    else{
+        divPokemons.innerHTML = ""
+        pokemonsForTeamCard(teamPokemon)
+    }
+}
+
+//Función para guardar en local storage
+const saveStorage = (name, value) => {
+    localStorage.setItem(name, JSON.stringify(value))
+}
+
+//Funciones para ordenar cards
+
+//Ordena los pokémon de menor a mayor según su ID y se renderizan las cards con ese orden
+function orderNumberA(){
     divPokemons.innerHTML = ""
-    pokemonsForTeamCard(teamPokemon)
+    pokedex.sort((a,b)=> (a.id - b.id))
+    cards(pokedex)
+    cardsTitle.innerHTML = "Pokémons ordenados por número ascendente"
+}
+
+//Ordena los pokémon de mayor a menor según su ID y se renderizan las cards con ese orden
+function orderNumberD(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b)=> (b.id - a.id))
+    cards(pokedex)
+    cardsTitle.innerHTML = "Pokémons ordenados por número descendente"
+}
+
+//Ordena los pokémon de A hasta Z según su nombre y se renderizan las cards con ese orden
+function orderAlphabeticalA(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b) => {
+        if(a.name < b.name){
+            return -1;
+        }
+        if(a.name > b.name){
+            return 1;
+        }
+        return 0;
+    })
+    cards(pokedex)
+    cardsTitle.innerHTML = "Pokémons ordenados por A-Z"
+}
+
+//Ordena los pokémon de Z hasta A según su nombre y se renderizan las cards con ese orden
+function orderAlphabeticalD(){
+    divPokemons.innerHTML = ""
+    pokedex.sort((a,b) => {
+        if(a.name < b.name){
+            return 1;
+        }
+        if(a.name > b.name){
+            return -1;
+        }
+        return 0;
+    })
+    cards(pokedex)
+    cardsTitle.innerHTML = "Pokémons ordenados por Z-A"
+}
+
+//Ordena los pokémon aleatoriamente y se renderizan las cards con ese orden
+function randomOrder(){
+    divPokemons.innerHTML = ""
+    pokedex.sort(() => Math.random() - 0.5)
+    cards(pokedex)
+    cardsTitle.innerHTML = "Pokémons ordenados aleatoriamente"
+}
+
+//Funcion para buscar pokémons por su nombre
+const searchPokemon = () => {
+    divPokemons.innerHTML = ""
+    const search = searchBar.value.toLowerCase()
+    const results = pokedex.filter((pokemon) => pokemon.name.toLowerCase().includes(search))
+    //Si no hay resultados en la búsqueda se informa con un Sweet Alert y se cargan todas las cards
+    if(results.length == 0){
+        Swal.fire({
+            title: "No hay resultados en tu búsqueda.",
+            icon: "error",
+            timer: 1500,
+            showConfirmButton: false
+        })
+        cards(pokedex)
+    }
+    //Si hay resultados en la búsqueda se muestran las cards correspondientes
+    else{
+        cards(results)
+        cardsTitle.innerHTML = "Resultados de la búsqueda"
+    }
+}
+
+//Funciones para botón de scroll up
+
+//Al hacer click en el botón te lleva hasta la parte superior de la página 
+function scrollUp(){
+    let currentScroll = document.documentElement.scrollTop
+    if(currentScroll > 0){
+        window.requestAnimationFrame(scrollUp)
+        window.scrollTo(0,currentScroll - (currentScroll/10))
+        btnUp.style.display = "none"
+    }
+}
+//El botón aparece cuando se scrollea hacia la parte inferior de la página
+window.onscroll = function(){
+    let scroll = document.documentElement.scrollTop
+    if(scroll > 200){
+        btnUp.style.display = "flex"
+    }else if (scroll < 200){
+        btnUp.style.display = "none"
+    }
 }
 
 //EventListeners
-orderAlphabeticalAs.addEventListener("click", orderAlphabeticalA)
-orderAlphabeticalDs.addEventListener("click", orderAlphabeticalD)
-orderNumberAs.addEventListener("click", orderNumberA)
-orderNumberDs.addEventListener("click", orderNumberD)
-randomOrder.addEventListener("click", random)
-searchBar.addEventListener('input', searchPokemon)
-yourTeam.addEventListener('click', pokemonsForTeam)
-resetTeam.addEventListener('click', clearTeam)
+searchBtn.addEventListener('click', searchPokemon)
+orderAlphabeticalUpwardBtn.addEventListener("click", orderAlphabeticalA)
+orderAlphabeticalDescendBtn.addEventListener("click", orderAlphabeticalD)
+orderNumberUpwardBtn.addEventListener("click", orderNumberA)
+orderNumberDescendBtn.addEventListener("click", orderNumberD)
+orderRandomBtn.addEventListener("click", randomOrder)
+showTeamBtn.addEventListener('click', pokemonsForTeam)
+resetTeamBtn.addEventListener('click', clearTeam)
+btnUp.addEventListener('click', scrollUp)
 
-//Inicialización 
+//Obtener pokémon guardados en el equipo desde el local storage
 teamPokemon = JSON.parse(localStorage.getItem('teamPokemon')) || []
 
 
