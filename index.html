@@ -18,6 +18,7 @@
     <title>Pokédex</title>
 </head>
 <body id="body">
+    <!-- Header -->
     <header>
     	<nav class="navbar navbar-expand-lg">
       		<div class="content-header container-fluid">
@@ -27,6 +28,7 @@
       		</div>
     	</nav>
   	</header>
+    <!-- Main -->
     <main>
         <!-- Botones de búsqueda y orden -->
         <div class="buttonsContainer" id="buttonsContainer">
@@ -38,16 +40,16 @@
                     <input type="text" name="searchBar" id="searchBar" placeholder="  Buscar por nombre">
                     <div class="searchBtn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></div>
                 </div>
-                <button class="pokedexButton" id="orderNumberA">Número ascendente</button>
-                <button class="pokedexButton" id="orderNumberD">Número descendente</button>
-                <button class="pokedexButton" id="orderAlphabeticalA">Alfabético ascendente</button>
-                <button class="pokedexButton" id="orderAlphabeticalD">Alfabético descendente</button>
-                <button class="pokedexButton" id="random">Aleatoriamente</button>
-                <button class="pokedexButton" id="yourTeam">Tu equipo</button>
-                <button class="pokedexButton" id="resetTeam">Vaciar equipo</button>
+                <button class="pokedexButton" id="orderNumberA">Número ascendente <i class="fa-solid fa-arrow-up-1-9"></i></button>
+                <button class="pokedexButton" id="orderNumberD">Número descendente <i class="fa-solid fa-arrow-down-1-9"></i></button>
+                <button class="pokedexButton" id="orderAlphabeticalA">Alfabético ascendente <i class="fa-solid fa-arrow-up-a-z"></i></button>
+                <button class="pokedexButton" id="orderAlphabeticalD">Alfabético descendente <i class="fa-solid fa-arrow-down-a-z"></i></button>
+                <button class="pokedexButton" id="random">Aleatoriamente <i class="fa-solid fa-shuffle"></i></button>
+                <button class="pokedexButton" id="yourTeam">Tu equipo <i class="fa-sharp fa-solid fa-star"></i></button>
+                <button class="pokedexButton" id="resetTeam">Vaciar equipo <i class="fa-solid fa-trash"></i></button>
             </div>
         </div>
-        <!-- Titulo de cards -->
+        <!-- Título de cards -->
         <div id="title">
             <!-- HTML desde JS -->
         </div>
@@ -76,11 +78,8 @@
               </div>
             </div>
         </div>
-        <!-- Botón para ir hacia arriba en la página -->
-        <div class="btnUp" id="btnUp">
-            <i class="fa-solid fa-chevron-up"></i>
-        </div>
     </main>
+    <!-- Footer -->
     <footer>
         <p>Developed by Rodrigo Alarcón</p>
     </footer>

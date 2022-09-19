@@ -19,7 +19,6 @@ const showTeamBtn = document.getElementById('yourTeam')
 const resetTeamBtn = document.getElementById('resetTeam')
 const cardsTitle = document.getElementById('title')
 const modalBody = document.getElementById("modal-body")
-const btnUp = document.getElementById('btnUp')
 const loader = document.getElementById('loader')
 
 //Funciones
@@ -517,27 +516,6 @@ const searchPokemon = () => {
     }
 }
 
-//Funciones para botón de scroll up
-
-//Al hacer click en el botón te lleva hasta la parte superior de la página 
-function scrollUp(){
-    let currentScroll = document.documentElement.scrollTop
-    if(currentScroll > 0){
-        window.requestAnimationFrame(scrollUp)
-        window.scrollTo(0,currentScroll - (currentScroll/10))
-        btnUp.style.display = "none"
-    }
-}
-//El botón aparece cuando se scrollea hacia la parte inferior de la página
-window.onscroll = function(){
-    let scroll = document.documentElement.scrollTop
-    if(scroll > 200){
-        btnUp.style.display = "flex"
-    }else if (scroll < 200){
-        btnUp.style.display = "none"
-    }
-}
-
 //EventListeners
 searchBtn.addEventListener('click', searchPokemon)
 orderAlphabeticalUpwardBtn.addEventListener("click", orderAlphabeticalA)
@@ -547,7 +525,6 @@ orderNumberDescendBtn.addEventListener("click", orderNumberD)
 orderRandomBtn.addEventListener("click", randomOrder)
 showTeamBtn.addEventListener('click', pokemonsForTeam)
 resetTeamBtn.addEventListener('click', clearTeam)
-btnUp.addEventListener('click', scrollUp)
 
 //Obtener pokémon guardados en el equipo desde el local storage
 teamPokemon = JSON.parse(localStorage.getItem('teamPokemon')) || []
