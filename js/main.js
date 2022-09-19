@@ -10,10 +10,10 @@ const buttonsContainer = document.getElementById('buttonsContainer')
 const divPokemons = document.getElementById('pokemons')
 const searchBar = document.getElementById('searchBar')
 const searchBtn = document.getElementById('searchBtn')
-const orderAlphabeticalUpwardBtn = document.getElementById('orderAlphabeticalA')
-const orderAlphabeticalDescendBtn = document.getElementById('orderAlphabeticalD')
-const orderNumberUpwardBtn = document.getElementById('orderNumberA')
-const orderNumberDescendBtn = document.getElementById('orderNumberD')
+const orderNameAscBtn = document.getElementById('orderAlphabeticalA')
+const orderNameDescBtn = document.getElementById('orderAlphabeticalD')
+const orderNumberAscBtn = document.getElementById('orderNumberA')
+const orderNumberDescBtn = document.getElementById('orderNumberD')
 const orderRandomBtn = document.getElementById('random')
 const showTeamBtn = document.getElementById('yourTeam')
 const resetTeamBtn = document.getElementById('resetTeam')
@@ -70,12 +70,28 @@ const cards = (array) => {
         const pokemonName = document.createElement("h3")
         pokemonName.classList.add("pokemonName")
         pokemonName.innerText = `${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}`
-        //Boton para añadir pokémon al equipo
-        const btnAdd = document.createElement("button")
-        btnAdd.classList.add("addTeam")
-        btnAdd.innerText = "Capturar Pokémon"
-        btnAdd.setAttribute("id", `${pokemon.id}`)
-        btnAdd.addEventListener("click", addPokemonTeam)
+
+        //Div contenedor del texto de la card
+        const buttonsBox = document.createElement("div")
+        buttonsBox.classList.add("buttonsBox")
+
+        if(array == teamPokemon){
+            const btnDelete = document.createElement("button")
+            btnDelete.classList.add("deleteTeam")
+            btnDelete.innerText = "Liberar Pokémon"
+            btnDelete.setAttribute("id", `${pokemon.id}`)
+            btnDelete.addEventListener("click", deletePokemon)
+            buttonsBox.appendChild(btnDelete)
+        }else{
+            //Boton para añadir pokémon al equipo
+            const btnAdd = document.createElement("button")
+            btnAdd.classList.add("addTeam")
+            btnAdd.innerText = "Capturar Pokémon"
+            btnAdd.setAttribute("id", `${pokemon.id}`)
+            btnAdd.addEventListener("click", addPokemon)
+            buttonsBox.appendChild(btnAdd)
+        }
+
         //Boton para ver modal de detalles del pokémon
         const btnDetails = document.createElement("button")
         btnDetails.classList.add("details")
@@ -92,8 +108,8 @@ const cards = (array) => {
         card.appendChild(textBox)
         textBox.appendChild(pokemonNumber)
         textBox.appendChild(pokemonName)
-        card.appendChild(btnAdd)
-        card.appendChild(btnDetails)
+        card.appendChild(buttonsBox)
+        buttonsBox.appendChild(btnDetails)
     })
 }
 
@@ -269,75 +285,6 @@ function pokemonAbilities(pokemon){
     return modalAbilities
 }
 
-//Cards para Equipo Pokémon
-const pokemonsForTeamCard = (array) => {
-    //Utilizando el mismo razonamiento que con las cards para todos los pokémons se realiza el mismo procedimiento con las cards de los pokémon dentro del equipo
-    divPokemons.setAttribute("class", "pokemonCards")
-    divPokemons.innerHTML = ""
-    cardsTitle.innerHTML = "Tu equipo"
-    array.forEach((pokemon) => {
-        const card = document.createElement("div")
-        card.classList.add("card")
-
-        const cardImgContainer = document.createElement("div")
-        cardImgContainer.classList.add("cardImgContainer")
-        cardImgContainer.classList.add(`${pokemon.types[0].type.name}`)
-
-        const cardImg = document.createElement("img")
-        cardImg.classList.add("cardImg")
-        cardImg.src = `${pokemon["sprites"]["other"]["official-artwork"]["front_default"]}`
-        cardImg.alt = `${pokemon.name}`
-
-        const textBox = document.createElement("div")
-        textBox.classList.add("textBox")
-
-        const pokemonNumber = document.createElement("p")
-        pokemonNumber.classList.add("pokemonNumber")
-        pokemonNumber.innerText = `#${pokemon.id.toString().padStart(3, 0)}`
-
-        const pokemonName = document.createElement("h3")
-        pokemonName.classList.add("pokemonName")
-        pokemonName.innerText = `${pokemon.species.name[0].toUpperCase() + pokemon.species.name.slice(1)}`
-
-        const btnDelete = document.createElement("button")
-        btnDelete.classList.add("deleteTeam")
-        btnDelete.innerText = "Liberar Pokémon"
-        btnDelete.setAttribute("id", `${pokemon.id}`)
-
-        const btnDetails = document.createElement("button")
-        btnDetails.classList.add("details")
-        btnDetails.innerText = "Ver detalles"
-        btnDetails.setAttribute("id", `${pokemon.species.name}`)
-        btnDetails.setAttribute("data-bs-toggle", `modal`)
-        btnDetails.setAttribute("data-bs-target", `#idModal`)
-        btnDetails.addEventListener("click", modalDetails)
-
-        divPokemons.appendChild(card)
-        card.appendChild(cardImgContainer)
-        cardImgContainer.appendChild(cardImg)
-        card.appendChild(textBox)
-        textBox.appendChild(pokemonNumber)
-        textBox.appendChild(pokemonName)
-        card.appendChild(btnDelete)
-        card.appendChild(btnDetails)
-    })
-    //Se le agrega la funcionalidad de eliminar pokémon del equipo al botón "Liberar Pokémon"
-    array.forEach((pokemon, index)=>{
-        document.getElementById(`${pokemon.id}`).addEventListener('click', () => {
-            let pokemonInTeam = document.getElementById(`${pokemon.id}`)
-            pokemonInTeam.remove()
-            array.splice(index, 1)
-            saveStorage('teamPokemon', teamPokemon)
-            Toastify({
-                text: `Eliminaste a ${pokemon.name[0].toUpperCase() + pokemon.name.slice(1)} de tu equipo.`,
-                duration: 3000,
-                gravity: "bottom",
-                style: {background: "#FF0000"},
-            }).showToast();
-            pokemonsForTeam()
-        })  
-    })
-}
 //Limpiar equipo pokémon
 const clearTeam = () => {
     //Si el equipo ya se encuentra vacío se informa que no se puede vaciar
@@ -375,7 +322,7 @@ const clearTeam = () => {
     )
 }
 //Agregar pokémon al equipo
-const addPokemonTeam = (e) => {
+const addPokemon = (e) => {
     //Se toma el ID del pokémon que se quiere agregar al equipo
     const pokemonById = e.target.getAttribute('id')
     const pokemonSelected = pokedex.find((pokemon) => pokemon.id == pokemonById)
@@ -383,6 +330,7 @@ const addPokemonTeam = (e) => {
     teamPokemon.find((pokemon) => pokemon.id == pokemonById) == undefined ? (
         //Si el equipo tiene menos de 6 pokémons se agrega el pokémon al equipo y se guarda en el local storage
         teamPokemon.length < 6 ? (
+            //Se pushea el pokémon al array del equipo pokémon y se guarda el array en local storage 
             teamPokemon.push(pokemonSelected),
             saveStorage('teamPokemon', teamPokemon),
             //Se muestra en un Toastify que el pokémon fue agregado al equipo con éxito
@@ -391,7 +339,7 @@ const addPokemonTeam = (e) => {
                 duration: 3000,
                 gravity: "bottom",
                 style: {background: "#0c950c"},
-                onClick: () => pokemonsForTeam(),
+                onClick: () => showTeam(),
                 }).showToast()
          ) : (
             //Si el equipo cuenta con 6 pokémons se informa con un Sweet Alert que el equipo esta completo y no se pueden agregar mas pokémons
@@ -412,22 +360,43 @@ const addPokemonTeam = (e) => {
         }).showToast()
     )
 }
-//Cargar cards de Equipo Pokémon
-const pokemonsForTeam = () =>{
-    //Si el equipo esta vacío se informa con un Sweet Alert y se cargan todas las cards
-    if(teamPokemon.length== 0){
+//Eliminar pokémon del equipo
+const deletePokemon = (e) => {
+    //Se toma el ID del pokémon que se quiere quiere eliminar del equipo
+    const pokemonById = e.target.getAttribute('id')
+    const pokemonSelected = teamPokemon.find((pokemon) => pokemon.id == pokemonById)
+    //Se toma el índice del pokémon que se quiere quiere eliminar del equipo
+    const pokemonIndex = teamPokemon.indexOf(pokemonSelected)
+    //Se elimina al pokémon del array del equipo pokémon y se guarda el array en local storage
+    teamPokemon.splice(pokemonIndex, 1)
+    saveStorage('teamPokemon', teamPokemon)
+    //Se muetra con un Toastify que pokémon fue eliminado 
+    Toastify({
+        text: `Eliminaste a ${pokemonSelected.name[0].toUpperCase() + pokemonSelected.name.slice(1)} de tu equipo.`,
+        duration: 3000,
+        gravity: "bottom",
+        style: {background: "#FF0000"},
+    }).showToast();
+    //Se vuelven a cargar los pokémon que se encuentran en el equipo
+    showTeam()
+}
+
+//Mostrar cards de Equipo Pokémon
+const showTeam = () =>{
+    //Si el equipo esta vacío se informa con un Sweet Alert y se cargan las cards de todos los pokémon
+    if(teamPokemon.length == 0){
         Swal.fire({
-            title: "Tu equipo se encuentra vacío, captura algunos Pokémons primero.",
+            text: "Tu equipo se encuentra vacío.",
             icon: "error",
-            timer: 2000,
-            showConfirmButton: false
+            confirmButtonText: "Entendido"
         })
         cards(pokedex)
     }
     //Si el equipo tiene al menos un pokémon se muestran las cards con los pokémon del equipo
     else{
         divPokemons.innerHTML = ""
-        pokemonsForTeamCard(teamPokemon)
+        cards(teamPokemon)
+        cardsTitle.innerHTML = "Tu equipo"
     }
 }
 
@@ -439,7 +408,7 @@ const saveStorage = (name, value) => {
 //Funciones para ordenar cards
 
 //Ordena los pokémon de menor a mayor según su ID y se renderizan las cards con ese orden
-function orderNumberA(){
+function orderNumberAsc(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b)=> (a.id - b.id))
     cards(pokedex)
@@ -447,7 +416,7 @@ function orderNumberA(){
 }
 
 //Ordena los pokémon de mayor a menor según su ID y se renderizan las cards con ese orden
-function orderNumberD(){
+function orderNumberDesc(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b)=> (b.id - a.id))
     cards(pokedex)
@@ -455,7 +424,7 @@ function orderNumberD(){
 }
 
 //Ordena los pokémon de A hasta Z según su nombre y se renderizan las cards con ese orden
-function orderAlphabeticalA(){
+function orderNameAsc(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b) => {
         if(a.name < b.name){
@@ -471,7 +440,7 @@ function orderAlphabeticalA(){
 }
 
 //Ordena los pokémon de Z hasta A según su nombre y se renderizan las cards con ese orden
-function orderAlphabeticalD(){
+function orderNameDesc(){
     divPokemons.innerHTML = ""
     pokedex.sort((a,b) => {
         if(a.name < b.name){
@@ -487,7 +456,7 @@ function orderAlphabeticalD(){
 }
 
 //Ordena los pokémon aleatoriamente y se renderizan las cards con ese orden
-function randomOrder(){
+function orderRandom(){
     divPokemons.innerHTML = ""
     pokedex.sort(() => Math.random() - 0.5)
     cards(pokedex)
@@ -518,12 +487,12 @@ const searchPokemon = () => {
 
 //EventListeners
 searchBtn.addEventListener('click', searchPokemon)
-orderAlphabeticalUpwardBtn.addEventListener("click", orderAlphabeticalA)
-orderAlphabeticalDescendBtn.addEventListener("click", orderAlphabeticalD)
-orderNumberUpwardBtn.addEventListener("click", orderNumberA)
-orderNumberDescendBtn.addEventListener("click", orderNumberD)
-orderRandomBtn.addEventListener("click", randomOrder)
-showTeamBtn.addEventListener('click', pokemonsForTeam)
+orderNameAscBtn.addEventListener("click", orderNameAsc)
+orderNameDescBtn.addEventListener("click", orderNameDesc)
+orderNumberAscBtn.addEventListener("click", orderNumberAsc)
+orderNumberDescBtn.addEventListener("click", orderNumberDesc)
+orderRandomBtn.addEventListener("click", orderRandom)
+showTeamBtn.addEventListener('click', showTeam)
 resetTeamBtn.addEventListener('click', clearTeam)
 
 //Obtener pokémon guardados en el equipo desde el local storage
