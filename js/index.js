@@ -20,6 +20,8 @@ async function getPokemon(id) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`);
     const data = await res.json();
     setPokemon(data);
+    setCards(pokedex);
+    title.style.display = "flex";
 }
 
 window.onload = async function () {
@@ -29,7 +31,6 @@ window.onload = async function () {
     setCards(pokedex);
     loader.style.display = "none";
     controls.style.display = "flex";
-    title.style.display = "flex";
 }
 
 function setNumberAsc() {
