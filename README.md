@@ -1,4 +1,4 @@
-<h1>Pokédex</h1> 
+<h1>Pokédex</h1>
 
 <p>Project creating a Pokédex with Vanilla JS and using the PokeAPI</p>
 
